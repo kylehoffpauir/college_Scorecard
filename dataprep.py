@@ -81,13 +81,20 @@ OUTPUT:
 
 NEED TO FIND EARNINGS
 """
-vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT', 'MN_EARN_WNE_P10', 'PREDDEG',
+vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT',  'PREDDEG',
                  'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN",
                  "UGDS_MEN", "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV",  "INEXPFTE",
-                 "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL"]
+                 "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL",
+                 "PCIP01", "PCIP03", "PCIP04", "PCIP05", "PCIP09", "PCIP10", "PCIP11", "PCIP12", "PCIP13",
+                 "PCIP14", "PCIP15", "PCIP16", "PCIP19", "PCIP22", "PCIP23", "PCIP24", "PCIP25", "PCIP26",
+                 "PCIP27", "PCIP29", "PCIP30", "PCIP31", "PCIP38", "PCIP39", "PCIP40", "PCIP41", "PCIP42",
+                 "PCIP43", "PCIP44", "PCIP45", "PCIP46", "PCIP47", "PCIP48", "PCIP49", "PCIP50", "PCIP51",
+                 "PCIP52", "PCIP54"]
 
-output_vars = ["C150_4", "RET_FT4", "CDR2", "COMP_ORIG_YR2_RT",
-               "WDRAW_ORIG_YR2_RT", "COMPL_RPY_3YR_RT", "OVERALL_YR4_N"]
+
+
+output_vars = ["C150_4", "RET_FT4", "CDR2", "COMP_ORIG_YR2_RT", 'DEBT_N'
+               "WDRAW_ORIG_YR2_RT", "COMPL_RPY_3YR_RT", "OVERALL_YR4_N", "COUNT_WNE_3YR"]
 
 # Which dataumns have no NAs
 datadir = 'CollegeScorecard_Raw_Data_03142022'

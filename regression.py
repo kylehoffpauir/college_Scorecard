@@ -58,13 +58,22 @@ warnings.filterwarnings('ignore')
 # take the closest 100 schools over all years to duquesne
 #
 
-vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT', 'MN_EARN_WNE_P10', 'PREDDEG',
-                 'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN",
+# vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT',  'PREDDEG',
+#                                    'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN",
+#                                    "UGDS_MEN", "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV",  "INEXPFTE",
+#                                    "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL"]
+vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT',  'PREDDEG',
+                 'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN",
                  "UGDS_MEN", "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV",  "INEXPFTE",
-                 "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL"]
+                 "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL",
+                 "PCIP01", "PCIP03", "PCIP04", "PCIP05", "PCIP09", "PCIP10", "PCIP11", "PCIP12", "PCIP13",
+                 "PCIP14", "PCIP15", "PCIP16", "PCIP19", "PCIP22", "PCIP23", "PCIP24", "PCIP25", "PCIP26",
+                 "PCIP27", "PCIP29", "PCIP30", "PCIP31", "PCIP38", "PCIP39", "PCIP40", "PCIP41", "PCIP42",
+                 "PCIP43", "PCIP44", "PCIP45", "PCIP46", "PCIP47", "PCIP48", "PCIP49", "PCIP50", "PCIP51",
+                 "PCIP52", "PCIP54"]
 
 output_vars = ["C150_4", "RET_FT4", "CDR2", "COMP_ORIG_YR2_RT",
-               "WDRAW_ORIG_YR2_RT", "COMPL_RPY_3YR_RT", "OVERALL_YR4_N"]
+               "COMPL_RPY_3YR_RT", "OVERALL_YR4_N"]
 
 
 data = pd.read_csv('clusterData.csv')
@@ -73,27 +82,45 @@ print(data.head())
 
 data.dropna(how='any', inplace=True)
 X = data[vars_interest]
-y = data["C150_4"]
 encoder = OneHotEncoder(categories='auto')
 X = encoder.fit_transform(data)
-x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=.2, random_state=0)
-x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.25, random_state=1) # 0.25 x 0.8 = 0.2
-train_score_list = []
-test_score_list = []
-# tested using every solver available and got the same
-# weighted this way bc id rather mistakenly id a poison than an an edible
-# more cautious
-#reg = LogisticRegression(solver="liblinear")
-reg = LinearRegression()
-reg.fit(x_train, y_train)
-y_pred = reg.predict(x_test)
+#y = data["C150_4"]
+
+dict = {}
+for o in output_vars:
+    y = data[o]
+    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=.2, random_state=0)
+    x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.25, random_state=1)
+    train_score_list = []
+    test_score_list = []
+    # tested using every solver available and got the same
+    # weighted this way bc id rather mistakenly id a poison than an an edible
+    # more cautious
+    reg = LinearRegression()
+    reg.fit(x_train, y_train)
+    y_pred = reg.predict(x_test)
+    y_pred_train = reg.predict(x_train)
+    y_pred_test = reg.predict(x_test)
+    y_pred_val = reg.predict(x_val)
+    coef_dict = {}
+    for coef, feat in zip(reg.coef_,vars_interest):
+        coef_dict[feat] = coef
+    dict[o] = coef_dict
+    print(reg.score(X,y))
+
+# now we have regressed over every output and stored the coeffs with their associated value
+# we need to go through each coef and normalize their values
+#       tot = sum(abs(coef))
+#       normalizedC = c/total --> this gives us a -1 to 1 value for importance
+#       now go through before we are finished with our current output value and check the top 10 best and worst coefs
+#       only store those in our dictionaries.
+# then we can make new duquense test data using our best and worst features
+# minimize and maximize them to find the values for optimal duquense
 
 
-y_pred_train = reg.predict(x_train)
-y_pred_test = reg.predict(x_test)
-y_pred_val = reg.predict(x_val)
+print(dict)
 
-print(reg.score(x_test, y_test))
+# print(reg.score(x_test, y_test))
 # print("training accuracy: " + str(accuracy_score(y_train, y_pred_train)))
 # print("testing accuracy: " + str(accuracy_score(y_test, y_pred_test)))
 # print("validation accuracy: " + str(accuracy_score(y_val, y_pred_val)))
@@ -102,3 +129,15 @@ print(reg.score(x_test, y_test))
 # print(confusion_matrix)
 # print(classification_report(y_test, y_pred))
 # print(reg.get_params())
+# from sklearn.feature_selection import RFE
+# data_final_vars=data.columns.values.tolist()
+#
+# linreg = LinearRegression()
+# rfe = RFE(linreg)
+# rfe = rfe.fit(X, y)
+# print(rfe.support_)
+# print(rfe.ranking_)
+# import statsmodels.api as sm
+# logit_model=sm.Logit(y,X)
+# result=logit_model.fit()
+# print(result.summary2())

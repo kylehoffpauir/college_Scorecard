@@ -124,8 +124,10 @@ duq = data.loc[data['INSTNM'] == "Duquesne University"]
 
 with pd.option_context('display.max_rows', None, 'display.max_columns', None):  # more options can be specified also
      print(duq)
-
+print(duq['cluster'].value_counts())
 duqClust = duq['cluster'].value_counts().index.tolist()[0]
+# duqClust2 =  duq['cluster'].value_counts().index.tolist()[1]
 
 clusterOfInterest = data.loc[data['cluster'] == duqClust]
+#clusterOfInterest.append(data.loc[data['cluster'] == duqClust2])
 clusterOfInterest.to_csv('clusterData.csv')
