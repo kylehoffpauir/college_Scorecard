@@ -113,7 +113,9 @@ def read_cs_data(year, data_dtypes, datadir):
 
 data = pd.concat((read_cs_data(str(y), data_dtypes, datadir) for y in range(2010, 2019)))
 data = data.set_index(['UNITID', 'Year'])
+data.to_csv('everything.csv')
 
+"""
 data.head()
 dataClean = data[data['UGDS'] > 1000]
 duq = dataClean.query('CITY=="Pittsburgh" and STABBR=="PA" and INSTNM=="Duquesne University"')
@@ -129,7 +131,7 @@ final_table_columns.extend(vars_interest)
 dataClean = dataClean[dataClean.columns.intersection(final_table_columns)]
 dataClean.dropna()
 print(dataClean.columns)
-
+"""
 y = '2019'
 print("""
 Duq Uni Statistics {}
@@ -141,12 +143,12 @@ SAT AVG: {:.0f}
       """.format(y, *tuple(duq.loc[y, ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN',
                                        'TUITIONFEE_OUT', 'OVERALL_YR4_N', "UGDS_WOMEN", "SAT_AVG"]])))
 
-dataClean = dataClean[dataClean['PREDDEG'] == 3]
-
-print(dataClean.info())
-print(dataClean.head())
-
-dataClean.to_csv('dataframe.csv')
+# dataClean = dataClean[dataClean['PREDDEG'] == 3]
+#
+# print(dataClean.info())
+# print(dataClean.head())
+#
+# dataClean.to_csv('dataframe.csv')
 
 """
 

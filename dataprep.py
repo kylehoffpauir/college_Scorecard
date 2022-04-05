@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import matplotlib as mpl
 import plotnine as p9
 from sklearn.naive_bayes import GaussianNB, CategoricalNB
+
 plt.style.use('ggplot')  # set the theme for plots
 mpl.rcParams['figure.figsize'] = (10, 8)
 
@@ -81,14 +82,13 @@ OUTPUT:
 NEED TO FIND EARNINGS
 """
 vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT', 'MN_EARN_WNE_P10', 'PREDDEG',
-                 'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN", "UGDS_MEN"
-                "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV"
+                 'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN",
+                 "UGDS_MEN", "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV",  "INEXPFTE",
+                 "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL"]
 
-                  "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL"]
+output_vars = ["C150_4", "RET_FT4", "CDR2", "COMP_ORIG_YR2_RT",
+               "WDRAW_ORIG_YR2_RT", "COMPL_RPY_3YR_RT", "OVERALL_YR4_N"]
 
-output_vars = ["C150_4", "RET_FT4", "CDR2", "DEATH_YR2_RT", "COMP_ORIG_YR2_RT", "COMP_4YR_TRANS_YR2_RT",
-               "WDRAW_ORIG_YR2_RT", "COMPL_RPY_3YR_RT", "OVERALL_YR4_N", "GT_THRESHOLD_P8"
-               ]
 # Which dataumns have no NAs
 datadir = 'CollegeScorecard_Raw_Data_03142022'
 
@@ -107,6 +107,7 @@ data_try_again = pd.read_csv(datadir + '/MERGED2009_10_PP.csv', na_values='Priva
 data_try_again.info()
 data_try_again['Year'] = pd.Period('2010', freq='Y')
 """
+
 
 def read_cs_data(year, data_dtypes, datadir):
     """read a datalegeScorecard dataframe"""
@@ -146,16 +147,10 @@ SAT AVG: {:.0f}
       """.format(y, *tuple(duq.loc[y, ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN',
                                        'TUITIONFEE_OUT', 'OVERALL_YR4_N', "UGDS_WOMEN", "SAT_AVG"]])))
 
-dataClean = dataClean[dataClean['PREDDEG'] == 3]
-
 print(dataClean.info())
 print(dataClean.head())
 
-
 dataClean.to_csv('cleanedData.csv')
-
-
-
 
 #
 # # split X and y into training and testing sets
@@ -202,20 +197,3 @@ dataClean.to_csv('cleanedData.csv')
 #
 # from sklearn.metrics import classification_report
 # print(classification_report(y_test, y_pred))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
