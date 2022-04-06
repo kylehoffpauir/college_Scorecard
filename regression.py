@@ -58,39 +58,48 @@ warnings.filterwarnings('ignore')
 # take the closest 100 schools over all years to duquesne
 #
 
-# vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT',  'PREDDEG',
-#                                    'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN",
-#                                    "UGDS_MEN", "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV",  "INEXPFTE",
-#                                    "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL"]
 vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT',  'PREDDEG',
-                 'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN",
-                 "UGDS_MEN", "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV",  "INEXPFTE",
-                 "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL",
-                 "PCIP01", "PCIP03", "PCIP04", "PCIP05", "PCIP09", "PCIP10", "PCIP11", "PCIP12", "PCIP13",
-                 "PCIP14", "PCIP15", "PCIP16", "PCIP19", "PCIP22", "PCIP23", "PCIP24", "PCIP25", "PCIP26",
-                 "PCIP27", "PCIP29", "PCIP30", "PCIP31", "PCIP38", "PCIP39", "PCIP40", "PCIP41", "PCIP42",
-                 "PCIP43", "PCIP44", "PCIP45", "PCIP46", "PCIP47", "PCIP48", "PCIP49", "PCIP50", "PCIP51",
+                                   'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID",  "AVGFACSAL", "UGDS_WOMEN",
+                                   "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV",  "INEXPFTE",
+                                   "PCTFLOAN",
+                "PCIP03", "PCIP05", "PCIP09",  "PCIP13",
+                 "PCIP14", "PCIP16",   "PCIP23", "PCIP26",
+                  "PCIP38",
+               "PCIP40", "PCIP42",
+                   "PCIP45",  "PCIP50", "PCIP51",
                  "PCIP52", "PCIP54"]
+# vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT',  'PREDDEG',
+#                  'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN",
+#                  "UGDS_MEN", "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV",  "INEXPFTE",
+#                  "PCTFLOAN", "ICLEVEL",
+#                  "PCIP01", "PCIP03", "PCIP04", "PCIP05", "PCIP09", "PCIP10", "PCIP11", "PCIP12", "PCIP13",
+#                  "PCIP14", "PCIP15", "PCIP16", "PCIP19", "PCIP22", "PCIP23", "PCIP24", "PCIP25", "PCIP26",
+#                  "PCIP27", "PCIP29", "PCIP30", "PCIP31", "PCIP38", "PCIP39", "PCIP40", "PCIP41", "PCIP42",
+#                  "PCIP43", "PCIP44", "PCIP45", "PCIP46", "PCIP47", "PCIP48", "PCIP49", "PCIP50", "PCIP51",
+#                  "PCIP52", "PCIP54"]
 
-output_vars = ["C150_4", "RET_FT4", "CDR2", "COMP_ORIG_YR2_RT",
-               "COMPL_RPY_3YR_RT", "OVERALL_YR4_N"]
+output_vars = ["C150_4", "RET_FT4", "CDR2", "COMP_ORIG_YR4_RT","DEBT_MDN",
+               "COMPL_RPY_3YR_RT", "MD_EARN_WNE_P6"]
+    #, "OVERALL_YR4_N"
 
 
 data = pd.read_csv('clusterData.csv')
 print(data.info())
 print(data.head())
-
-data.dropna(how='any', inplace=True)
+print(len(vars_interest))
+data = data.fillna(0)
 X = data[vars_interest]
 encoder = OneHotEncoder(categories='auto')
 X = encoder.fit_transform(data)
 #y = data["C150_4"]
 
+from sklearn.preprocessing import normalize
 dict = {}
 for o in output_vars:
+    sum = 0
     y = data[o]
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=.2, random_state=0)
-    x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.25, random_state=1)
+    #x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.25, random_state=1)
     train_score_list = []
     test_score_list = []
     # tested using every solver available and got the same
@@ -101,13 +110,45 @@ for o in output_vars:
     y_pred = reg.predict(x_test)
     y_pred_train = reg.predict(x_train)
     y_pred_test = reg.predict(x_test)
-    y_pred_val = reg.predict(x_val)
+   # y_pred_val = reg.predict(x_val)
     coef_dict = {}
-    for coef, feat in zip(reg.coef_,vars_interest):
+    norm = np.linalg.norm(reg.coef_)
+    normalized = reg.coef_/norm
+    for coef, feat in zip(normalized,vars_interest):
         coef_dict[feat] = coef
     dict[o] = coef_dict
-    print(reg.score(X,y))
+    print(o + " " + str(reg.score(X,y)))
 
+bestDict = {}
+worstDict = {}
+# go through our nested dict
+dcopy = dict
+for o, col in dcopy.items():
+    #print("\nOutput variable", o)
+    bestVals = {}
+    worstVals = {}
+   # print(max(col.values()))
+    #for coeff in col:
+        #print(coeff + ':', col[coeff])
+    for i in range(0,5):
+        key_to_delete = max(col, key=lambda k: col[k])
+        bestVals[key_to_delete] = max(col.values())
+        del col[key_to_delete]
+    for i in range(0,5):
+        key_to_delete = min(col, key=lambda k: col[k])
+        worstVals[key_to_delete] = min(col.values())
+        del col[key_to_delete]
+    bestDict[o] = bestVals
+    worstDict[o] = worstVals
+
+for o, col in bestDict.items():
+    print("\nOutput variable:", o)
+    print("best:")
+    for coeff in col:
+        print(coeff + ':', col[coeff])
+    print("worst:")
+    for coeff in worstDict[o]:
+        print(coeff + ':', worstDict[o][coeff])
 # now we have regressed over every output and stored the coeffs with their associated value
 # we need to go through each coef and normalize their values
 #       tot = sum(abs(coef))
@@ -116,28 +157,3 @@ for o in output_vars:
 #       only store those in our dictionaries.
 # then we can make new duquense test data using our best and worst features
 # minimize and maximize them to find the values for optimal duquense
-
-
-print(dict)
-
-# print(reg.score(x_test, y_test))
-# print("training accuracy: " + str(accuracy_score(y_train, y_pred_train)))
-# print("testing accuracy: " + str(accuracy_score(y_test, y_pred_test)))
-# print("validation accuracy: " + str(accuracy_score(y_val, y_pred_val)))
-#
-# confusion_matrix = confusion_matrix(y_test, y_pred)
-# print(confusion_matrix)
-# print(classification_report(y_test, y_pred))
-# print(reg.get_params())
-# from sklearn.feature_selection import RFE
-# data_final_vars=data.columns.values.tolist()
-#
-# linreg = LinearRegression()
-# rfe = RFE(linreg)
-# rfe = rfe.fit(X, y)
-# print(rfe.support_)
-# print(rfe.ranking_)
-# import statsmodels.api as sm
-# logit_model=sm.Logit(y,X)
-# result=logit_model.fit()
-# print(result.summary2())

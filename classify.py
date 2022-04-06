@@ -45,8 +45,8 @@ warnings.filterwarnings('ignore')
 
 # calculate similarity between institutions with bayes:
 similar = ['PREDDEG', 'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", 'TUITIONFEE_IN', 'TUITIONFEE_OUT',
-           'UGDS',"AVGFACSAL","UGDS_WOMEN", "UGDS_MEN", "BOOKSUPPLY", "ROOMBOARD_ON", "CONTROL",
-           "PCTFLOAN", "INEXPFTE", "C150_4"]
+           'UGDS',"AVGFACSAL","BOOKSUPPLY", "ROOMBOARD_ON", "CONTROL",
+           "PCTFLOAN", "INEXPFTE", "C150_4",  "RET_FT4", "ICLEVEL"]
 # do naive bayes on X for output y for each y in similar
 # take top 5 features that impact the goodness
 
@@ -90,32 +90,34 @@ def k_means(true_k):
     print("Silhouette Coefficient: %0.3f" % (sil / num_iter))
 
 
-# sil = []
-# K = range(2, 25)
-# for k in K:
-#     km = KMeans(n_clusters=k, max_iter=200, n_init=10)
-#     km.fit(X)
-#     labels = km.labels_
-#     sil.append(metrics.silhouette_score(X, labels, metric = 'euclidean'))
-#     print(k)
-#
-# plt.plot(K, sil, 'bx-')
-# plt.xlabel('k')
-# plt.ylabel('silhouette score')
-# plt.title('Silhouette Method For Optimal k')
-# plt.show()
-#7 or 10
+sil = []
+K = range(2, 15)
+for k in K:
+    km = KMeans(n_clusters=k, max_iter=200, n_init=10)
+    km.fit(X)
+    labels = km.labels_
+    sil.append(metrics.silhouette_score(X, labels, metric = 'euclidean'))
+    print(k)
+
+plt.plot(K, sil, 'bx-')
+plt.xlabel('k')
+plt.ylabel('silhouette score')
+plt.title('Silhouette Method For Optimal k')
+plt.show()
+# #5 or 7
 
 #k_means(15, False)
 #k_means(10)
 #k_means(25, False)
 #k_means(35, False)
 
-model = KMeans(n_clusters=10, init='k-means++', max_iter=200, n_init=10)
+model = KMeans(n_clusters=7, init='k-means++', max_iter=500, n_init=10)
 model.fit(X)
 pred = model.predict(X)
 frame = pd.DataFrame(X)
 data['cluster'] = pd.Series(pred, index=data.index)
+X_dist = model.transform(X)**2
+data['distance'] = pd.Series((X_dist.sum(axis=1).round(2)), index=data.index)
 print(model.cluster_centers_)
 
 print(data.info())
@@ -126,8 +128,8 @@ with pd.option_context('display.max_rows', None, 'display.max_columns', None):  
      print(duq)
 print(duq['cluster'].value_counts())
 duqClust = duq['cluster'].value_counts().index.tolist()[0]
-# duqClust2 =  duq['cluster'].value_counts().index.tolist()[1]
+#duqClust2 =  duq['cluster'].value_counts().index.tolist()[1]
 
 clusterOfInterest = data.loc[data['cluster'] == duqClust]
 #clusterOfInterest.append(data.loc[data['cluster'] == duqClust2])
-clusterOfInterest.to_csv('clusterData.csv')
+clusterOfInterest.to_csv('clusterData_unused.csv')

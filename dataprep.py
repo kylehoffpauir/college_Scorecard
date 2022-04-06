@@ -64,7 +64,7 @@ OUTPUT:
         CDR2 - Two year cohort default rate
         CDR3 - Three year cohort default rate
         DEATH_YR2_RT - % died within 2 years at original institution
-        COMP_ORIG_YR2_RT - Percent completed within 2 years at original institution
+        COMP_ORIG_YR4_RT - Percent completed within 2 years at original institution
         COMP_4YR_TRANS_YR2_RT - Percent who transferred to a 4-year institution and completed within 2 years
         WDRAW_ORIG_YR2_RT - Percent withdrawn from original institution within 2 years
         COMPL_RPY_3YR_RT - Three-year repayment rate for completers
@@ -81,20 +81,23 @@ OUTPUT:
 
 NEED TO FIND EARNINGS
 """
-vars_interest = ['ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT',  'PREDDEG',
+vars_interest = ["CONTROL", "UNITID", 'ADM_RATE', 'UGDS', 'TUITIONFEE_IN', 'TUITIONFEE_OUT',  'PREDDEG',
                  'HIGHDEG', 'ADM_RATE', 'SAT_AVG', "ACTCMMID", "DEBT_MDN", "AVGFACSAL", "UGDS_WOMEN",
                  "UGDS_MEN", "GRADS", "BOOKSUPPLY", "ROOMBOARD_ON", "NUM4_PRIV",  "INEXPFTE",
-                 "UNITID", "CONTROL", "PCTFLOAN", "ICLEVEL",
-                 "PCIP01", "PCIP03", "PCIP04", "PCIP05", "PCIP09", "PCIP10", "PCIP11", "PCIP12", "PCIP13",
-                 "PCIP14", "PCIP15", "PCIP16", "PCIP19", "PCIP22", "PCIP23", "PCIP24", "PCIP25", "PCIP26",
-                 "PCIP27", "PCIP29", "PCIP30", "PCIP31", "PCIP38", "PCIP39", "PCIP40", "PCIP41", "PCIP42",
-                 "PCIP43", "PCIP44", "PCIP45", "PCIP46", "PCIP47", "PCIP48", "PCIP49", "PCIP50", "PCIP51",
-                 "PCIP52", "PCIP54"]
+                 "PCTFLOAN", "ICLEVEL",
+                 "PCIP03", "PCIP05", "PCIP09", "PCIP11",  "PCIP13",
+                 "PCIP14", "PCIP16",  "PCIP22", "PCIP23", "PCIP24", "PCIP25", "PCIP26",
+                 "PCIP27", "PCIP30", "PCIP38",
+                 "PCIP40", "PCIP42",
+                 "PCIP43", "PCIP44", "PCIP45",  "PCIP50", "PCIP51",
+                 "PCIP52", "PCIP54", "UGDS_WHITE", "UGDS_BLACK", "UGDS_HISP", "UGDS_ASIAN", "UGDS_AIAN", "UGDS_NHPI", "UGDS_2MOR", "UGDS_NRA", "UGDS_UNKN",
+                 "TUITFTE", "PFTFAC", 
+                 ]
 
 
 
-output_vars = ["C150_4", "RET_FT4", "CDR2", "COMP_ORIG_YR2_RT", 'DEBT_N'
-               "WDRAW_ORIG_YR2_RT", "COMPL_RPY_3YR_RT", "OVERALL_YR4_N", "COUNT_WNE_3YR"]
+output_vars = ["C150_4", "RET_FT4", "CDR2", "COMP_ORIG_YR4_RT", 'DEBT_N'
+               "WDRAW_ORIG_YR2_RT", "COMPL_RPY_3YR_RT", "OVERALL_YR4_N", "COUNT_WNE_3YR", "MD_EARN_WNE_P6"]
 
 # Which dataumns have no NAs
 datadir = 'CollegeScorecard_Raw_Data_03142022'
